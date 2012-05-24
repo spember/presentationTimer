@@ -21,4 +21,6 @@ The timer will count up, and once the time is within a certain limit (default 10
 
 Note that those times are in seconds (so 20 minute limit with a 5 minute warning).
 
+Clicking on the timer will reset it back to 0.
+
 

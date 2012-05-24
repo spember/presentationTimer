@@ -27,6 +27,14 @@ var presentationTimer = new function () {
         document.body.appendChild(this.el);
     };
 
+    // binds all events on our element
+    this.bindEvents = function () {
+        var self = this;
+        self.el.onclick = function () {
+            self.reset.call(self);
+        }
+    };
+
     // formats time and adds a padding 0 if the value is less than 10
     this.getFormattedTime = function (val, divisor, mod) {
         var temp = Math.floor(val/divisor) % mod;
@@ -42,6 +50,15 @@ var presentationTimer = new function () {
         return this.el.className.indexOf(name) > -1;
     };
 
+    this.reset = function () {
+        var self  = this;
+        this.startTime = new Date();
+        this.el.classList.remove("outta-time");
+        this.setSeconds(0);
+        this.setMinutes(0);
+        this.setHours(0);
+    };
+
     this.updateTimeDisplay = function () {
         var self = this,
             // convert to seconds from millis
@@ -50,24 +67,32 @@ var presentationTimer = new function () {
         if (self.options.limit && (self.options.limit - current) < self.options.warningRange && !self.hasClass("outta-time")) {
             self.el.classList.add("outta-time");
         }
-        //seconds
-        this.timeSlots[2].innerHTML = self.getFormattedTime(current, 1, 60);
-        //minutes
-        this.timeSlots[1].innerHTML = self.getFormattedTime(current, 60, 60);
-        //hours
-        this.timeSlots[0].innerHTML = self.getFormattedTime(current, 3600, 24);
+        this.setSeconds(current);
+        this.setMinutes(current);
+        this.setHours(current);
 
-
-
-        setTimeout(function () {
+        self.timeout = setTimeout(function () {
             self.updateTimeDisplay.call(self);
         }, 1000);
 
     };
 
+    this.setSeconds = function (target) {
+        this.timeSlots[2].innerHTML = this.getFormattedTime(target, 1, 60);
+    };
+
+    this.setMinutes = function (target) {
+        this.timeSlots[1].innerHTML = this.getFormattedTime(target, 60, 60);
+    };
+
+    this.setHours = function (target) {
+        this.timeSlots[0].innerHTML = this.getFormattedTime(target, 3600, 24);
+    };
+
     this.init = function (options) {
         var self = this;
         this.generateMarkup();
+        this.bindEvents();
         self.startTime = new Date();
 
         for (var attr in options) {
@@ -75,7 +100,7 @@ var presentationTimer = new function () {
         }
 
 
-        setTimeout(function () {
+        self.timeout = setTimeout(function () {
             self.updateTimeDisplay.call(self);
         }, 1000);
 
